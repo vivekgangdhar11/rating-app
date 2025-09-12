@@ -4,7 +4,7 @@ const UserController = require("../controllers/user.controller");
 const { authenticateToken, isAdmin } = require("../middleware/auth");
 const { registerValidation, validate } = require("../middleware/validation");
 express = require("express");
-const router = express.Router();
+
 const User = require("../models/user");
 const { comparePassword, generateToken } = require("../utils/auth");
 const { authenticateToken, isAdmin } = require("../middleware/auth");

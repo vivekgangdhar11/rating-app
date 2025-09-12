@@ -1,8 +1,4 @@
-const mysql = require(    // Split SQL file into separate statements and clean them
-    const statements = sql
-      .split(';')
-      .map(statement => statement.trim())
-      .filter(statement => statement.length > 0);ql2/promise");
+const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 async function initializeDatabase() {
@@ -14,6 +10,7 @@ async function initializeDatabase() {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      multipleStatements: true, // Enable multiple statements
     });
 
     console.log("Connected to MySQL server");
@@ -24,17 +21,8 @@ async function initializeDatabase() {
     const sqlPath = path.join(__dirname, "..", "database.sql");
     const sql = fs.readFileSync(sqlPath, "utf8");
 
-    // Split SQL file into separate statements
-    const statements = sql
-      .split(";")
-      .filter((statement) => statement.trim().length > 0);
-
-    // Execute each statement
-    for (let statement of statements) {
-      await connection.query(statement + ";");
-      console.log("Executed SQL statement successfully");
-    }
-
+    // Execute all SQL statements at once
+    await connection.query(sql);
     console.log("Database and tables created successfully");
 
     // Create an admin user if it doesn't exist

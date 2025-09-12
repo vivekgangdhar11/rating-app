@@ -1,5 +1,6 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS rating_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Drop and recreate database
+DROP DATABASE IF EXISTS rating_app;
+CREATE DATABASE rating_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE rating_app;
 
 -- Users table
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS ratings (
   UNIQUE KEY unique_user_store (user_id, store_id)
 );
 
--- Indexes for better query performance
+-- Create indexes for better query performance
 CREATE INDEX idx_store_ratings ON ratings(store_id);
 CREATE INDEX idx_user_ratings ON ratings(user_id);
 CREATE INDEX idx_users_email ON users(email);

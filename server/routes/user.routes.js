@@ -75,4 +75,7 @@ router.post(
   UserController.updatePassword
 );
 
+// Refresh token (authenticated)
+router.post("/refresh", authenticateToken, UserController.refreshToken);
+
 module.exports = router;
