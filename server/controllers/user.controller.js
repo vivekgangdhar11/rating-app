@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const { generateToken } = require("../utils/auth");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const { query } = require("../utils/db");
 
 /**
  * User Controller - Handles user-related business logic
@@ -84,6 +86,48 @@ class UserController {
     } catch (error) {
       console.error("Update profile error:", error);
       res.status(500).json({ message: "Error updating profile" });
+    }
+  }
+
+  /**
+   * Update user password
+   */
+  static async updatePassword(req, res) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const userId = req.user.id;
+
+      // Get user's current password hash
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Verify current password
+      const isValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isValid) {
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update password in database
+      const result = await query("UPDATE users SET password = ? WHERE id = ?", [
+        hashedPassword,
+        userId,
+      ]);
+
+      if (result.affectedRows === 0) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Update password error:", error);
+      res.status(500).json({ message: "Error updating password" });
     }
   }
 
