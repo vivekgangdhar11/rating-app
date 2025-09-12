@@ -21,7 +21,9 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config
-    if (error.response && error.response.status === 401 && !original._retry) {
+    const isAuthEndpoint = original?.url?.includes('/users/login') || original?.url?.includes('/users/register') || original?.url?.includes('/users/refresh')
+    const storedToken = localStorage.getItem('token')
+    if (error.response && error.response.status === 401 && !original._retry && !isAuthEndpoint && storedToken) {
       original._retry = true
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -35,7 +37,7 @@ api.interceptors.response.use(
       isRefreshing = true
       try {
         const resp = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/users/refresh', {}, {
-          headers: { Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '' }
+          headers: { Authorization: storedToken ? `Bearer ${storedToken}` : '' }
         })
         const newToken = resp.data.token
         localStorage.setItem('token', newToken)
@@ -47,7 +49,6 @@ api.interceptors.response.use(
         pendingRequests.forEach(({ reject }) => reject(e))
         pendingRequests = []
         localStorage.removeItem('token')
-        window.location.href = '/login'
         return Promise.reject(e)
       } finally {
         isRefreshing = false

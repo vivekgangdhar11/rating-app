@@ -15,11 +15,26 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
+    if ((form.name || '').trim().length < 20) {
+      setLoading(false)
+      setError('Minimum length 20 characters required for name')
+      return
+    }
     try {
       await register(form)
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed')
+      const valErrors = err.response?.data?.errors
+      if (valErrors && Array.isArray(valErrors)) {
+        const nameErr = valErrors.find(x => x.path === 'name')
+        if (nameErr) {
+          setError('Minimum length 20 characters required')
+        } else {
+          setError(valErrors.map(x => x.msg).join(', '))
+        }
+      } else {
+        setError(err.response?.data?.message || 'Registration failed')
+      }
     } finally {
       setLoading(false)
     }

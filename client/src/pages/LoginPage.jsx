@@ -21,7 +21,11 @@ export default function LoginPage() {
       await login(email, password)
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed')
+      if (err.response?.status === 401) {
+        setError('Wrong credentials')
+      } else {
+        setError(err.response?.data?.message || 'Login failed')
+      }
     } finally {
       setLoading(false)
     }

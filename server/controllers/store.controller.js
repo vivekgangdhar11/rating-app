@@ -1,5 +1,6 @@
 const Store = require("../models/store");
 const { validationResult } = require("express-validator");
+const { query } = require("../utils/db");
 
 /**
  * Store Controller - Handles store-related business logic

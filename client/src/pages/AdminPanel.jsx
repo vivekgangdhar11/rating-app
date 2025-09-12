@@ -7,6 +7,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [newStore, setNewStore] = useState({ name: '', email: '', address: '', owner_id: '' })
+  const [createError, setCreateError] = useState('')
+  const [createSuccess, setCreateSuccess] = useState('')
 
   const load = async () => {
     try {
@@ -29,12 +31,31 @@ export default function AdminPanel() {
 
   const createStore = async (e) => {
     e.preventDefault()
+    setCreateError('')
+    setCreateSuccess('')
     try {
-      await api.post('/stores', newStore)
+      const payload = {
+        name: newStore.name,
+        email: newStore.email,
+        address: newStore.address,
+      }
+      if (newStore.owner_id) {
+        payload.owner_id = Number(newStore.owner_id)
+      }
+      await api.post('/stores', payload)
       setNewStore({ name: '', email: '', address: '', owner_id: '' })
-      load()
+      setCreateSuccess('Store created successfully')
+      await load()
     } catch (e) {
-      alert(e.response?.data?.message || 'Failed to create store')
+      const apiMsg = e.response?.data?.message
+      const valErrors = e.response?.data?.errors
+      if (valErrors && Array.isArray(valErrors)) {
+        setCreateError(valErrors.map(x => x.msg).join(', '))
+      } else if (apiMsg) {
+        setCreateError(apiMsg)
+      } else {
+        setCreateError('Failed to create store')
+      }
     }
   }
 
@@ -69,6 +90,8 @@ export default function AdminPanel() {
               {ownerOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
             </select>
           </label>
+          {createError && <div className="error">{createError}</div>}
+          {createSuccess && <div className="success">{createSuccess}</div>}
           <button type="submit">Create</button>
         </form>
       </section>
