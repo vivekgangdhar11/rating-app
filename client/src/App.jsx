@@ -31,7 +31,7 @@ function App() {
         <Route
           path="/owner"
           element={
-            <ProtectedRoute roles={["owner", "admin"]}>
+            <ProtectedRoute roles={["owner"]}>
               <OwnerDashboard />
             </ProtectedRoute>
           }
