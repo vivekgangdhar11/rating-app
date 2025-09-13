@@ -6,10 +6,7 @@ export default function OwnerDashboard() {
   const [storeStats, setStoreStats] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [responseMap, setResponseMap] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortField, setSortField] = useState('')
-  const [sortDirection, setSortDirection] = useState('asc')
 
   useEffect(() => {
     loadData()
@@ -40,51 +37,15 @@ export default function OwnerDashboard() {
     }
   }
 
-  const sendResponse = async (ratingId) => {
-    const text = responseMap[ratingId]
-    if (!text) return
-    try {
-      await api.post(`/owners/ratings/${ratingId}/respond`, { response: text })
-      await loadData()
-      setResponseMap({ ...responseMap, [ratingId]: '' })
-    } catch (e) {
-      alert(e.response?.data?.message || 'Failed to respond')
-    }
-  }
-
-  // Filter and sort functions
+  // Filter function
   const filteredRatings = ratings.filter(rating => {
     return rating.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
            rating.store_name.toLowerCase().includes(searchTerm.toLowerCase())
   })
 
-  const sortData = (data, field, direction) => {
-    if (!field) return data
-    return [...data].sort((a, b) => {
-      const aVal = a[field]
-      const bVal = b[field]
-      if (direction === 'asc') {
-        return aVal > bVal ? 1 : -1
-      } else {
-        return aVal < bVal ? 1 : -1
-      }
-    })
-  }
-
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
-    }
-  }
-
-  const sortedRatings = sortData(filteredRatings, sortField, sortDirection)
-
   // Group ratings by store
   const ratingsByStore = {}
-  sortedRatings.forEach(rating => {
+  filteredRatings.forEach(rating => {
     if (!ratingsByStore[rating.store_id]) {
       ratingsByStore[rating.store_id] = []
     }
@@ -200,33 +161,13 @@ export default function OwnerDashboard() {
                       <p className="text-sm text-blue-800">{rating.owner_response}</p>
                     </div>
                   )}
-                  
-                  <div className="border-t-2 border-gray-100 pt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      {rating.owner_response ? '🔄 Update Response:' : '💬 Respond to this rating:'}
-                    </label>
-                    <textarea
-                      placeholder="Write your response..."
-                      value={responseMap[rating.id] || ''}
-                      onChange={(e) => setResponseMap({ ...responseMap, [rating.id]: e.target.value })}
-                      className="input-field"
-                      rows="3"
-                    />
-                    <button
-                      onClick={() => sendResponse(rating.id)}
-                      disabled={!responseMap[rating.id]}
-                      className="btn-primary mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {rating.owner_response ? '🔄 Update Response' : '💬 Send Response'}
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
           </div>
         ))}
 
-        {sortedRatings.length === 0 && (
+        {filteredRatings.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No ratings found matching your search.</p>
           </div>
@@ -235,5 +176,3 @@ export default function OwnerDashboard() {
     </div>
   )
 }
-
-

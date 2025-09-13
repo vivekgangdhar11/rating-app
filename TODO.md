@@ -13,3 +13,14 @@
 - [ ] Test the fix by logging in as owner/admin and attempting to rate (requires running the application)
 - [ ] Verify that regular users can still rate normally
 - [ ] Ensure no other parts of the app are affected
+
+# TODO: Remove Send Response Field from Owner Dashboard
+
+## Completed Tasks
+- [x] Analyze OwnerDashboard.jsx to identify response-related code
+- [x] Remove responseMap state, sendResponse function, and related UI elements
+- [x] Keep feedback rating display intact
+
+## Next Steps
+- [ ] Test the Owner Dashboard UI to confirm changes
+- [ ] Verify ratings display correctly without response functionality
