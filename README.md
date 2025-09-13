@@ -2,6 +2,9 @@
 
 A full-stack web application that allows users to rate stores, store owners to manage their stores, and administrators to oversee the entire system. Built with React, Express, and MySQL.
 
+**This project was developed as part of a FullStack Intern Coding Challenge.  
+I implemented the full assignment requirements including authentication, role-based access control, dashboards for Admin/Owner/User, rating system, and database integration.**
+
 ## Features
 
 - User registration and authentication
@@ -222,6 +225,13 @@ npm test
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## Future Improvements
+
+- Implement unit and integration tests for backend and frontend
+- Add password reset and account recovery feature
+- Containerize the application with Docker for easier deployment
+- Set up CI/CD pipeline for automated testing and deployment
 
 ## License
 
