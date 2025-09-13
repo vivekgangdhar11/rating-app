@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user.routes");
 const storeRoutes = require("./routes/store.routes");
 const ratingRoutes = require("./routes/rating.routes");
 const ownerRoutes = require("./routes/owner.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,6 +28,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/owners", ownerRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Root route
 app.get("/", (req, res) => {
@@ -37,6 +39,8 @@ app.get("/", (req, res) => {
       users: "/api/users",
       stores: "/api/stores",
       ratings: "/api/ratings",
+      owners: "/api/owners",
+      admin: "/api/admin",
     },
   });
 });

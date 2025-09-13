@@ -11,7 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 function App() {
   return (
-    <div className="app-container">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <Navbar />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
