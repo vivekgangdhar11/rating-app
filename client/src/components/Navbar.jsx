@@ -15,7 +15,7 @@ export default function Navbar() {
                 <span className="text-2xl">⭐</span>
               </div>
               <span className="text-2xl font-bold text-white group-hover:text-yellow-200 transition-colors duration-200">
-                RatingApp
+               RateMyStore
               </span>
             </Link>
           </div>
