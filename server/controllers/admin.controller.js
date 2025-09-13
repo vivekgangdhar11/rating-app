@@ -12,6 +12,11 @@ class AdminController {
    */
   static async createStoreAdmin(req, res) {
     try {
+      // Check if user is admin
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -19,24 +24,43 @@ class AdminController {
 
       const { name, email, address, ownerId } = req.body;
 
-      // Validate that ownerId exists and role === 'store_owner' or 'owner'
-      if (ownerId) {
-        const ownerUser = await query(
-          "SELECT id, role FROM users WHERE id = ?",
-          [ownerId]
-        );
+      // Validate name length (20-60 chars)
+      if (!name || name.length < 20 || name.length > 60) {
+        return res.status(400).json({ error: 'Name must be 20–60 characters' });
+      }
 
-        if (!ownerUser[0]) {
-          return res.status(400).json({
-            message: "Owner ID does not exist",
-          });
-        }
+      // Validate address length (≤400 chars)
+      if (!address || address.length > 400) {
+        return res.status(400).json({ error: 'Address too long' });
+      }
 
-        if (ownerUser[0].role !== "owner" && ownerUser[0].role !== "store_owner") {
-          return res.status(400).json({
-            message: "User is not a store owner",
-          });
-        }
+      // Validate email format
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+
+      // Validate that ownerId exists and role === 'owner'
+      if (!ownerId) {
+        return res.status(400).json({
+          error: 'Owner ID is required',
+        });
+      }
+
+      const ownerUser = await query(
+        "SELECT id, role FROM users WHERE id = ?",
+        [ownerId]
+      );
+
+      if (!ownerUser[0]) {
+        return res.status(400).json({
+          error: 'Invalid owner ID',
+        });
+      }
+
+      if (ownerUser[0].role !== "owner") {
+        return res.status(400).json({
+          error: 'User is not a store owner',
+        });
       }
 
       // Check for duplicate email
@@ -47,16 +71,16 @@ class AdminController {
 
       if (existingStore[0]) {
         return res.status(400).json({
-          message: "Store with this email already exists",
+          error: 'Store with this email already exists',
         });
       }
 
       // Create the store
       const storeData = { name, email, address };
-      const store = await Store.create(storeData, ownerId || req.user.id);
+      const store = await Store.create(storeData, ownerId);
 
       res.status(201).json({
-        message: "Store created successfully",
+        message: 'Store created successfully',
         store: store,
       });
     } catch (error) {

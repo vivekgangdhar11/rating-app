@@ -8,6 +8,10 @@ class Store {
    * @returns {Promise<Object>} Created store
    */
   static async create(storeData, ownerId) {
+    if (!ownerId) {
+      throw new Error("Owner ID is required");
+    }
+    
     const result = await query(
       "INSERT INTO stores (owner_id, name, email, address) VALUES (?, ?, ?, ?)",
       [ownerId, storeData.name, storeData.email, storeData.address]
@@ -71,6 +75,22 @@ class Store {
   static async delete(id) {
     const result = await query("DELETE FROM stores WHERE id = ?", [id]);
     return result.affectedRows > 0;
+  }
+
+  /**
+   * Find stores by owner ID
+   * @param {number} ownerId - Owner's user ID
+   * @returns {Promise<Array>} List of stores with ratings
+   */
+  static async findByOwnerId(ownerId) {
+    return await query(`
+      SELECT s.*, ROUND(COALESCE(AVG(r.score), 0), 2) as average_rating,
+             COUNT(r.id) as total_ratings
+      FROM stores s
+      LEFT JOIN ratings r ON s.id = r.store_id
+      WHERE s.owner_id = ?
+      GROUP BY s.id
+    `, [ownerId]);
   }
 }
 

@@ -23,7 +23,8 @@ class StoreController {
         });
       }
 
-      // If admin is creating store for another owner
+      // If admin is creating store for another owner, use provided owner_id
+      // Otherwise, use the current user's ID as the owner
       const ownerId = req.body.owner_id || req.user.id;
 
       // If admin is creating for another owner, validate owner exists and is a store owner
@@ -50,10 +51,24 @@ class StoreController {
 
   /**
    * Get all stores with average ratings
+   * If ownerId query param is provided, returns only stores owned by that user
    */
   static async getAllStores(req, res) {
     try {
-      const stores = await Store.findAll();
+      const { ownerId } = req.query;
+      
+      let stores;
+      if (ownerId) {
+        // Verify the user is either an admin or the owner themselves
+        if (req.user && (req.user.role === 'admin' || req.user.id === parseInt(ownerId))) {
+          stores = await Store.findByOwnerId(ownerId);
+        } else {
+          return res.status(403).json({ message: "Not authorized to view these stores" });
+        }
+      } else {
+        stores = await Store.findAll();
+      }
+      
       res.json(stores);
     } catch (error) {
       console.error("Get stores error:", error);

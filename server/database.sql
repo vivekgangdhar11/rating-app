@@ -18,11 +18,14 @@ CREATE TABLE IF NOT EXISTS users (
 -- Stores table
 CREATE TABLE IF NOT EXISTS stores (
   id INT PRIMARY KEY AUTO_INCREMENT,
+  owner_id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   address VARCHAR(400) NOT NULL,
+  description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
 -- Ratings table
@@ -31,6 +34,8 @@ CREATE TABLE IF NOT EXISTS ratings (
   user_id INT NOT NULL,
   store_id INT NOT NULL,
   score INT NOT NULL CHECK (score >= 1 AND score <= 5),
+  comment TEXT,
+  owner_response TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -49,8 +54,9 @@ CREATE OR REPLACE VIEW store_ratings_summary AS
 SELECT 
     s.id,
     s.name,
+    s.owner_id,
     COUNT(r.id) as total_ratings,
     ROUND(AVG(r.score), 2) as average_rating
 FROM stores s
 LEFT JOIN ratings r ON s.id = r.store_id
-GROUP BY s.id, s.name;
+GROUP BY s.id, s.name, s.owner_id;

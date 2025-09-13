@@ -20,10 +20,8 @@ router.use(adminOnly);
 // Validation middleware for store creation
 const validateStoreCreation = [
   body("name")
-    .isLength({ min: 1 })
-    .withMessage("Store name is required")
-    .isLength({ max: 255 })
-    .withMessage("Store name must be less than 255 characters"),
+    .isLength({ min: 20, max: 60 })
+    .withMessage("Store name must be 20-60 characters"),
   body("email")
     .isEmail()
     .withMessage("Valid email is required")
@@ -32,10 +30,11 @@ const validateStoreCreation = [
   body("address")
     .isLength({ min: 1 })
     .withMessage("Address is required")
-    .isLength({ max: 500 })
-    .withMessage("Address must be less than 500 characters"),
+    .isLength({ max: 400 })
+    .withMessage("Address must be less than 400 characters"),
   body("ownerId")
-    .optional()
+    .notEmpty()
+    .withMessage("Owner ID is required")
     .isInt({ min: 1 })
     .withMessage("Owner ID must be a positive integer"),
 ];

@@ -57,7 +57,7 @@ export default function AdminPanel() {
         email: newStore.email,
         address: newStore.address,
       }
-      if (newStore.ownerId) {
+      if (newStore.ownerId && newStore.ownerId.trim() !== '') {
         payload.ownerId = Number(newStore.ownerId)
       }
       await api.post('/admin/stores', payload)
@@ -289,6 +289,14 @@ export default function AdminPanel() {
                   </th>
                   <th 
                     className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-blue-100 transition-colors duration-200"
+                    onClick={() => handleSort('ownerId')}
+                  >
+                    <div className="flex items-center">
+                      👤 Owner ID {sortField === 'ownerId' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-blue-100 transition-colors duration-200"
                     onClick={() => handleSort('average_rating')}
                   >
                     <div className="flex items-center">
@@ -311,6 +319,9 @@ export default function AdminPanel() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-600 max-w-xs truncate">{store.address}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">{store.ownerId || 'Admin'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -370,6 +381,14 @@ export default function AdminPanel() {
                 <tr>
                   <th 
                     className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-green-100 transition-colors duration-200"
+                    onClick={() => handleSort('id')}
+                  >
+                    <div className="flex items-center">
+                      🆔 ID {sortField === 'id' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-green-100 transition-colors duration-200"
                     onClick={() => handleSort('name')}
                   >
                     <div className="flex items-center">
@@ -405,6 +424,9 @@ export default function AdminPanel() {
               <tbody className="bg-white divide-y divide-gray-100">
                 {sortedUsers.map((user, index) => (
                   <tr key={user.id} className={`hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">{user.id}</div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">{user.name}</div>
                     </td>
