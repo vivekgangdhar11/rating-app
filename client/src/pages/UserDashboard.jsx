@@ -16,20 +16,42 @@ export default function UserDashboard() {
 
   const loadData = async () => {
     try {
-      const [storesRes, ratingsRes] = await Promise.all([
-        api.get('/stores'),
-        api.get('/ratings')
-      ])
-      setStores(storesRes.data)
+      console.log('Fetching stores and ratings...')
       
-      // Create a map of user's ratings by store ID
-      const ratingsMap = {}
-      ratingsRes.data.forEach(rating => {
-        ratingsMap[rating.store_id] = rating.score
-      })
-      setUserRatings(ratingsMap)
+      // Fetch stores first - using direct API endpoint with proxy
+      const storesRes = await fetch('/api/stores')
+      if (!storesRes.ok) {
+        throw new Error(`HTTP error! status: ${storesRes.status}`)
+      }
+      const storesData = await storesRes.json()
+      console.log('Stores loaded:', storesData) // Debug log to verify stores are loaded
+      console.log('Total stores received:', storesData.length)
+      setStores(storesData)
+      
+      // Then fetch ratings - using direct API endpoint with proxy
+      try {
+        const ratingsRes = await fetch('/api/ratings')
+        if (!ratingsRes.ok) {
+          throw new Error(`HTTP error! status: ${ratingsRes.status}`)
+        }
+        const ratingsData = await ratingsRes.json()
+        console.log('Ratings loaded:', ratingsData)
+        
+        // Create a map of user's ratings by store ID
+        const ratingsMap = {}
+        ratingsData.forEach(rating => {
+          ratingsMap[rating.store_id] = rating.score
+        })
+        console.log('User ratings map:', ratingsMap)
+        setUserRatings(ratingsMap)
+      } catch (ratingErr) {
+        console.error('Error loading ratings:', ratingErr)
+        // Continue with empty ratings rather than failing completely
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load data')
+      console.error('Error loading data:', err)
+      console.error('Error details:', err.message)
+      setError('Failed to load data: ' + err.message)
     } finally {
       setLoading(false)
     }
@@ -37,12 +59,37 @@ export default function UserDashboard() {
 
   const submitRating = async (storeId, score) => {
     try {
-      await api.post('/ratings', { storeId, score })
+      const response = await fetch('/api/ratings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          store_id: storeId,
+          score
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      // Update the user's ratings map
       setUserRatings({ ...userRatings, [storeId]: score })
-      const updated = await api.get('/stores')
-      setStores(updated.data)
+      
+      // Refresh stores data
+      const storesRes = await fetch('/api/stores')
+      if (!storesRes.ok) {
+        throw new Error(`HTTP error! status: ${storesRes.status}`)
+      }
+      const storesData = await storesRes.json()
+      setStores(storesData)
     } catch (e) {
-      alert(e.response?.data?.message || 'Failed to submit rating')
+      console.error('Error submitting rating:', e)
+      alert(e.message || 'Failed to submit rating')
     }
   }
 
