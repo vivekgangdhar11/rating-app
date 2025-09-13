@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import api from '../utils/api.js'
+import { useAuth } from '../state/AuthContext.jsx'
 
 export default function UserDashboard() {
+  const { user } = useAuth()
   const [stores, setStores] = useState([])
   const [userRatings, setUserRatings] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortField, setSortField] = useState('')
-  const [sortDirection, setSortDirection] = useState('asc')
+  const [sortCriteria, setSortCriteria] = useState('name')
 
   useEffect(() => {
     loadData()
@@ -58,6 +59,10 @@ export default function UserDashboard() {
   }
 
   const submitRating = async (storeId, score) => {
+    if (user && (user.role === 'owner' || user.role === 'admin')) {
+      alert('Owner and admin cannot rate')
+      return
+    }
     try {
       const response = await fetch('/api/ratings', {
         method: 'POST',
@@ -66,7 +71,7 @@ export default function UserDashboard() {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
-          store_id: storeId,
+          storeId: storeId,
           score
         })
       })
@@ -74,8 +79,6 @@ export default function UserDashboard() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      
-      const data = await response.json()
       
       // Update the user's ratings map
       setUserRatings({ ...userRatings, [storeId]: score })
@@ -94,8 +97,12 @@ export default function UserDashboard() {
   }
 
   const updateRating = async (storeId, score) => {
+    if (user && (user.role === 'owner' || user.role === 'admin')) {
+      alert('Owner and admin cannot rate')
+      return
+    }
     try {
-      await api.put(`/ratings/${storeId}`, { score })
+      await api.put(`/ratings`, { storeId, score })
       setUserRatings({ ...userRatings, [storeId]: score })
       const updated = await api.get('/stores')
       setStores(updated.data)
@@ -107,32 +114,19 @@ export default function UserDashboard() {
   // Filter and sort functions
   const filteredStores = stores.filter(store => {
     return store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           store.address.toLowerCase().includes(searchTerm.toLowerCase())
+          store.address.toLowerCase().includes(searchTerm.toLowerCase())
   })
 
-  const sortData = (data, field, direction) => {
-    if (!field) return data
-    return [...data].sort((a, b) => {
-      const aVal = a[field]
-      const bVal = b[field]
-      if (direction === 'asc') {
-        return aVal > bVal ? 1 : -1
-      } else {
-        return aVal < bVal ? 1 : -1
-      }
-    })
-  }
-
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
+  const sortedStores = [...filteredStores].sort((a, b) => {
+    if (sortCriteria === 'name') {
+      return a.name.localeCompare(b.name)
+    } else if (sortCriteria === 'rating') {
+      return b.average_rating - a.average_rating
+    } else if (sortCriteria === 'total_ratings') {
+      return b.total_ratings - a.total_ratings
     }
-  }
-
-  const sortedStores = sortData(filteredStores, sortField, sortDirection)
+    return 0
+  })
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -159,19 +153,29 @@ export default function UserDashboard() {
 
         {/* Search and Filter */}
         <div className="card p-6 mb-8">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <span className="mr-3">🔍</span>
-              Search Stores
-            </h2>
-            <input
-              type="text"
-              placeholder="🔍 Search stores..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="input-field w-80"
-            />
-          </div>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <span className="mr-3">🔍</span>
+            Search Stores
+          </h2>
+          <input
+            type="text"
+            placeholder="🔍 Search stores..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="input-field w-80"
+          />
+          <select
+            value={sortCriteria}
+            onChange={e => setSortCriteria(e.target.value)}
+            className="input-field ml-4"
+            aria-label="Sort stores"
+          >
+            <option value="name">Sort by Name</option>
+            <option value="rating">Sort by Average Rating</option>
+            <option value="total_ratings">Sort by Total Ratings</option>
+          </select>
+        </div>
         </div>
 
         {/* Stores Grid */}

@@ -90,16 +90,16 @@ export default function AdminPanel() {
   // Filter and sort functions
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-                         user.email.toLowerCase().includes(userSearch.toLowerCase()) ||
-                         user.address.toLowerCase().includes(userSearch.toLowerCase())
+                        user.email.toLowerCase().includes(userSearch.toLowerCase()) ||
+                        user.address.toLowerCase().includes(userSearch.toLowerCase())
     const matchesRole = !userRoleFilter || user.role === userRoleFilter
     return matchesSearch && matchesRole
   })
 
   const filteredStores = stores.filter(store => {
     return store.name.toLowerCase().includes(storeSearch.toLowerCase()) ||
-           store.email.toLowerCase().includes(storeSearch.toLowerCase()) ||
-           store.address.toLowerCase().includes(storeSearch.toLowerCase())
+          store.email.toLowerCase().includes(storeSearch.toLowerCase()) ||
+          store.address.toLowerCase().includes(storeSearch.toLowerCase())
   })
 
   const sortData = (data, field, direction) => {

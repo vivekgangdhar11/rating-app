@@ -18,6 +18,16 @@ router.post(
   RatingController.submitRating
 );
 
+// Update rating (user only)
+router.put(
+  "/",
+  authenticateToken,
+  isUser,
+  ratingValidation,
+  validate,
+  RatingController.submitRating
+);
+
 // Get store ratings (store owner or admin)
 router.get("/:storeId", authenticateToken, RatingController.getStoreRatings);
 
