@@ -14,6 +14,58 @@ I implemented the full assignment requirements including authentication, role-ba
 - Dashboards for different user roles
 - Secure API with JWT authentication
 
+## Working Flow
+
+Here’s how the application works end-to-end:
+
+1. **Admin Signup / Login**
+>⚠️ **Note:**There is **no default admin seeded automatically**.  
+>To test Admin functionality, create one manually from the signup page by choosing `role  =admin`.
+
+   - Go to signup page.
+   - Register with role = `admin`.
+   - Login → access admin dashboard.
+   - Admin can:
+     - View all users, stores, and ratings.
+     - Create new stores (but only for existing store owners).
+     - Delete any store.
+
+2. **Store Owner Signup / Login**
+   - Register with role = `owner`.
+   - Login → access owner dashboard.
+   - Owners can:
+     - View their own stores (if assigned by Admin).
+
+3. **User Signup / Login**
+   - Register with role = `user`.
+   - Login → access user dashboard.
+   - Users can:
+     - View the list of stores.
+     - Submit ratings (1–5 stars) for stores.
+
+4. **Store Creation**
+   - Only Admin can create stores.
+   - When creating a store, Admin must select an **existing owner** (registered with role = owner).
+   - Without an existing owner account, the Admin cannot create a store.
+
+5. **Rating Flow**
+   - A user selects a store → submits a rating.
+   - Store’s average rating is calculated automatically.
+   - Owners can see ratings for their stores.
+   - Admin can see all ratings across the system.
+
+---
+
+### Example Usage Order
+1. Sign up an **Admin** (role = admin).  
+2. Sign up an **Owner** (role = owner).  
+3. Admin logs in and creates a **Store**, assigning it to the existing Owner.  
+4. Sign up a **User** (role = user).  
+5. User browses stores and submits ratings.  
+6. Owner logs in and views ratings for their stores.  
+7. Admin oversees everything in the Admin dashboard.
+
+
 ## Tech Stack
 
 ### Frontend
@@ -107,6 +159,19 @@ rating-app/
    ```
 
    Frontend will run on http://localhost:5173
+
+## Admin Account Setup
+
+In this project, there is no default admin seeded automatically.  
+Instead, you can create an admin account directly from the signup page by selecting `role = admin`.
+
+Steps:
+1. Go to signup page.
+2. Enter details (name, email, password).
+3. Choose role = admin.
+4. Submit → this creates an admin account.
+
+You can now login with that account as admin and access all admin functionalities.
 
 ## Environment Variables
 
