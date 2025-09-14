@@ -1,303 +1,356 @@
 # Rating App
 
-A full-stack web application that allows users to rate stores, store owners to manage their stores, and administrators to oversee the entire system. Built with React, Express, and MySQL.
+A full-stack web application that allows users to rate stores, store owners to manage their stores, and administrators to oversee the entire system. Built with **React**, **Express**, and **MySQL**.
 
 **This project was developed as part of a FullStack Intern Coding Challenge.  
-I implemented the full assignment requirements including authentication, role-based access control, dashboards for Admin/Owner/User, rating system, and database integration.**
+It implements authentication, role-based access control, dashboards for Admin/Owner/User, a rating system, and automatic database integration.**
+
+---
 
 ## Features
 
+- Automatic database and table creation on server start
+- Pre-created Admin account:
+  - **Email:** `admin@example.com`
+  - **Password:** `admin123`
 - User registration and authentication
-- Store management (CRUD operations for admins and owners)
-- Rating system (users can rate stores 1-5 stars)
+- Store management (CRUD for Admins and Owners)
+- Rating system (users can rate stores 1–5 stars)
 - Role-based access control (Admin, Owner, User)
 - Dashboards for different user roles
 - Secure API with JWT authentication
 
+---
+
 ## Working Flow
 
-Here’s how the application works end-to-end:
-
-1. **Admin Signup / Login**
->⚠️ **Note:**There is **no default admin seeded automatically**.  
->To test Admin functionality, create one manually from the signup page by choosing `role  =admin`.
-
-   - Go to signup page.
-   - Register with role = `admin`.
-   - Login → access admin dashboard.
-   - Admin can:
-     - View all users, stores, and ratings.
-     - Create new stores (but only for existing store owners).
-     - Delete any store.
-
+1. **Admin Login**
+    - Use the pre-created Admin account:
+      - **Email:** `admin@example.com`
+      - **Password:** `admin123`
+    - Admin can:
+      - View all users, stores, and ratings
+      - Create new stores (assign to Owners)
+      - Delete any store
 2. **Store Owner Signup / Login**
-   - Register with role = `owner`.
-   - Login → access owner dashboard.
-   - Owners can:
-     - View their own stores (if assigned by Admin).
-
+    - Register with role = `owner`
+    - Owners can view their assigned stores and ratings
 3. **User Signup / Login**
-   - Register with role = `user`.
-   - Login → access user dashboard.
-   - Users can:
-     - View the list of stores.
-     - Submit ratings (1–5 stars) for stores.
-
+    - Register with role = `user`
+    - Users can view stores and submit ratings (1–5 stars)
 4. **Store Creation**
-   - Only Admin can create stores.
-   - When creating a store, Admin must select an **existing owner** (registered with role = owner).
-   - Without an existing owner account, the Admin cannot create a store.
-
+    - Only Admin can create stores and assign to Owners
 5. **Rating Flow**
-   - A user selects a store → submits a rating.
-   - Store’s average rating is calculated automatically.
-   - Owners can see ratings for their stores.
-   - Admin can see all ratings across the system.
+    - Users submit ratings for stores
+    - Store’s average rating is calculated automatically
+    - Owners and Admins can view all ratings
 
 ---
 
-### Example Usage Order
-1. Sign up an **Admin** (role = admin).  
-2. Sign up an **Owner** (role = owner).  
-3. Admin logs in and creates a **Store**, assigning it to the existing Owner.  
-4. Sign up a **User** (role = user).  
-5. User browses stores and submits ratings.  
-6. Owner logs in and views ratings for their stores.  
-7. Admin oversees everything in the Admin dashboard.
+## Example Usage Order
 
+1. Admin logs in using the pre-created account
+2. Sign up an Owner (role = `owner`)
+3. Admin creates a Store and assigns it to the Owner
+4. Sign up a User (role = `user`)
+5. User browses stores and submits ratings
+6. Owner views ratings for their stores
+7. Admin oversees all activities in the dashboard
+
+---
 
 ## Tech Stack
 
-### Frontend
-
+**Frontend:**
 - React (Vite)
 - React Router DOM
 - Axios
 - Material-UI
 - Tailwind CSS
-- Emotion (for styled components)
+- Emotion (styled components)
 
-### Backend
+**Backend:**
+- Node.js, Express
+- MySQL2 (auto DB creation)
+- bcryptjs, jsonwebtoken
+- express-validator
+- CORS, dotenv
+- Nodemon (dev)
 
-- Node.js
-- Express
-- MySQL2
-- bcryptjs (password hashing)
-- jsonwebtoken (JWT auth)
-- express-validator (input validation)
-- CORS
-- Dotenv
-- Nodemon (development)
+---
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
-- MySQL (v8.0 or higher)
-- npm or yarn package manager
+- Node.js (v14+)
+- MySQL (v8+)
+- npm or yarn
+
+---
 
 ## Project Structure
 
 ```
 rating-app/
-├── client/           # React frontend
-│   ├── src/         # Source files
+├── README.md
+├── client/ # React frontend
+│   ├── public/
+│   │   └── vite.svg
+│   ├── src/
+│   │   ├── assets/
+│   │   │   └── react.svg
 │   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   └── ProtectedRoute.jsx
 │   │   ├── pages/
+│   │   │   ├── AdminPanel.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── OwnerDashboard.jsx
+│   │   │   ├── ProfilePage.jsx
+│   │   │   ├── RegisterPage.jsx
+│   │   │   └── UserDashboard.jsx
 │   │   ├── state/
-│   │   └── utils/
-│   ├── public/      # Static files
-│   └── ...
-└── server/          # Express backend
-    ├── config/      # Database and setup configs
-    ├── controllers/ # Route controllers
-    ├── middleware/  # Custom middleware
-    ├── models/      # Data models
-    ├── routes/      # API routes
-    ├── utils/       # Utility functions
-    ├── tests/       # Test files
-    ├── index.js     # Server entry point
-    └── ...
+│   │   │   └── AuthContext.jsx
+│   │   ├── utils/
+│   │   │   └── api.js
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── test-env.js
+│   └── vite.config.js
+└── server/ # Express backend
+    ├── config/
+    │   ├── create-test-data.js
+    │   ├── database.js
+    │   ├── init-db.js
+    │   └── setup-db.js
+    ├── controllers/
+    │   ├── admin.controller.js
+    │   ├── rating.controller.js
+    │   ├── store.controller.js
+    │   └── user.controller.js
+    ├── middleware/
+    │   ├── auth.js
+    │   ├── auth.middleware.js
+    │   ├── password-validation.js
+    │   └── validation.js
+    ├── models/
+    │   ├── rating.js
+    │   ├── store.js
+    │   └── user.js
+    ├── routes/
+    │   ├── admin.routes.js
+    │   ├── owner.routes.js
+    │   ├── rating.routes.js
+    │   ├── ratings.js
+    │   ├── store.routes.js
+    │   ├── stores.js
+    │   ├── user.routes.js
+    │   └── users.js
+    ├── seeders/
+    ├── tests/
+    │   └── data-persistence.test.js
+    ├── utils/
+    │   ├── auth.js
+    │   └── db.js
+    ├── .gitignore
+    ├── database.sql
+    ├── index.js
+    ├── package.json
+    ├── package-lock.json
+    └── README.md
 ```
+
+---
 
 ## Getting Started
 
-1. Clone the repository:
+### Clone the repository
 
-   ```bash
-   git clone https://github.com/vivekgangdhar11/rating-app.git
-   cd rating-app
-   ```
+```bash
+git clone https://github.com/vivekgangdhar11/rating-app.git
+cd rating-app
+```
 
-2. Setup Database:
+### Setup Backend
 
-   - Install and start MySQL
-   - Create a database named `rating_app`
-   - Run the database setup script:
-
-     ```bash
-     cd server
-     mysql -u your_username -p < database.sql
-     ```
-
-3. Setup Backend:
+1. Navigate to the server directory:
 
    ```bash
    cd server
-   npm install
-   # Create .env file with your configuration (see Environment Variables section)
-   npm run dev
    ```
 
-   Backend will run on http://localhost:5000
+2. Install dependencies:
 
-4. Setup Frontend:
+   ```bash
+   npm install
+   ```
+
+3. Create `.env` file (see Environment Variables section below).
+
+4. Set up the database:
+
+   - Ensure MySQL is running.
+   - The backend will automatically create the `rating_app` database, all tables, indexes, and the `store_ratings_summary` view when the server starts.
+   - ⚠️ Optional: To manually reset or seed the database, you can run:
+     ```bash
+     mysql -u your_username -p < database.sql
+     ```
+
+5. Start the server:
+
+   - Development mode (with auto-reload):
+
+     ```bash
+     npm run dev
+     ```
+
+   - Production mode:
+
+     ```bash
+     npm start
+     ```
+
+   The backend will run at: http://localhost:5000
+
+### Setup Frontend
+
+1. Open a new terminal and navigate to the client directory:
 
    ```bash
    cd client
+   ```
+
+2. Install dependencies:
+
+   ```bash
    npm install
+   ```
+
+3. Start the development server:
+
+   ```bash
    npm run dev
    ```
 
-   Frontend will run on http://localhost:5173
+   The frontend will run at: http://localhost:5173
 
-## Admin Account Setup
-
-In this project, there is no default admin seeded automatically.  
-Instead, you can create an admin account directly from the signup page by selecting `role = admin`.
-
-Steps:
-1. Go to signup page.
-2. Enter details (name, email, password).
-3. Choose role = admin.
-4. Submit → this creates an admin account.
-
-You can now login with that account as admin and access all admin functionalities.
+---
 
 ## Environment Variables
 
-### Backend (.env in server/)
+Create a `.env` file in the `server/` directory with the following variables:
 
 ```
 PORT=5000
 DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
 DB_NAME=rating_app
 JWT_SECRET=your_secret_key
 ```
 
-Generate a secure JWT secret:
+To generate a secure JWT secret, run:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
+---
+
 ## API Documentation
 
-### Authentication
+**Authentication**
+- `POST /api/users/register` – Register new user
+- `POST /api/users/login` – Login user
 
-- POST /api/users/register - Register new user
-- POST /api/users/login - Login user
+**Stores**
+- `GET /api/stores` – List stores
+- `POST /api/stores` – Create store (Admin)
+- `GET /api/stores/:id` – Get store details
+- `PUT /api/stores/:id` – Update store
+- `DELETE /api/stores/:id` – Delete store (Admin)
 
-### Stores
+**Ratings**
+- `POST /api/ratings/:storeId` – Submit rating (User)
+- `GET /api/ratings/:storeId` – View ratings for a store
+- `GET /api/ratings/:storeId/average` – Get average rating
 
-- GET /api/stores - List all stores
-- POST /api/stores - Create store (Admin)
-- GET /api/stores/:id - Get store details
-- PUT /api/stores/:id - Update store (Admin/Owner)
-- DELETE /api/stores/:id - Delete store (Admin)
+**Owners**
+- `GET /api/owners/stores` – Get stores owned by logged-in Owner
+- `PUT /api/owners/stores/:id` – Update owned store
 
-### Ratings
+**Admin**
+- `GET /api/admin/users` – List all users
+- `GET /api/admin/stores` – List all stores
+- `GET /api/admin/ratings` – List all ratings
 
-- POST /api/ratings/:storeId - Submit rating (User)
-- GET /api/ratings/:storeId - View ratings for a store
-- GET /api/ratings/:storeId/average - Get average rating for a store
-
-### Owners
-
-- GET /api/owners/stores - Get stores owned by the logged-in owner
-- PUT /api/owners/stores/:id - Update owned store
-
-### Admin
-
-- GET /api/admin/users - List all users
-- GET /api/admin/stores - List all stores
-- GET /api/admin/ratings - List all ratings
+---
 
 ## Database Models
 
-### User
+**User:**
+`id`, `name`, `email`, `password`, `address`, `role` (admin, user, owner)
 
-- id: Auto-increment primary key
-- name: String (20-60 characters)
-- email: String (unique)
-- password: String (hashed)
-- address: String (max 400 characters)
-- role: Enum ('admin', 'user', 'owner')
+**Store:**
+`id`, `name`, `email`, `address`, `ownerId` (FK → User), `average_rating` (computed)
 
-### Store
+**Rating:**
+`id`, `userId` (FK), `storeId` (FK), `score` (1–5)
 
-- id: Auto-increment primary key
-- name: String
-- email: String (unique)
-- address: String
-- ownerId: Foreign key to User
-
-### Rating
-
-- id: Auto-increment primary key
-- userId: Foreign key to User
-- storeId: Foreign key to Store
-- score: Integer (1-5)
+---
 
 ## Available Scripts
 
-### Frontend
+**Frontend:**
+- `npm run dev` – Start development server
+- `npm run build` – Build for production
+- `npm run preview` – Preview production build
+- `npm run lint` – Run ESLint
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+**Backend:**
+- `npm run dev` – Start server with nodemon
+- `npm start` – Start server in production
+- `npm test` – Run tests (currently placeholder)
 
-### Backend
-
-- `npm run dev` - Start development server with Nodemon
-- `npm start` - Start production server
-- `npm test` - Run tests (currently not implemented)
-
-## Testing
-
-The backend includes a tests directory with data persistence tests. To run tests:
-
-```bash
-cd server
-npm test
-```
+---
 
 ## Security Features
 
 - Password hashing with bcrypt
-- JWT-based authentication
-- Role-based access control (RBAC)
+- JWT authentication
+- Role-based access control
 - Input validation and sanitization
 - SQL injection prevention
 - CORS configuration
 
+---
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the repo
+2. Create a branch
+3. Commit changes
+4. Push
+5. Open a PR
+
+---
 
 ## Future Improvements
 
-- Implement unit and integration tests for backend and frontend
-- Add password reset and account recovery feature
-- Containerize the application with Docker for easier deployment
-- Set up CI/CD pipeline for automated testing and deployment
+- Unit and integration tests
+- Password reset and account recovery
+- Dockerize project
+- CI/CD pipeline
 
 ## License
 
-This project is licensed under the ISC License.
+ISC License
