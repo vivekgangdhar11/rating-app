@@ -164,7 +164,6 @@ export default function RegisterPage() {
                 >
                   <option value="user">👤 User</option>
                   <option value="owner">🏪 Store Owner</option>
-                  <option value="admin">⚙️ Admin</option>
                 </select>
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <span className="text-gray-400">🎭</span>

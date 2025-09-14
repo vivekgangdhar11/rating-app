@@ -16,11 +16,12 @@ async function initDatabase() {
     console.log("Connected to MySQL server");
 
     // Create database
-    await connection.query("DROP DATABASE IF EXISTS rating_app");
+    const dbName = process.env.DB_NAME || "rating_app";
+    await connection.query(`DROP DATABASE IF EXISTS ${dbName}`);
     await connection.query(
-      "CREATE DATABASE rating_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+      `CREATE DATABASE ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
-    await connection.query("USE rating_app");
+    await connection.query(`USE ${dbName}`);
 
     console.log("Database created");
 
@@ -99,7 +100,7 @@ async function initDatabase() {
     });
   } catch (error) {
     console.error("Error:", error);
-    process.exit(1);
+    throw error; // Throw error instead of exiting process
   } finally {
     if (connection) {
       await connection.end();
@@ -107,12 +108,4 @@ async function initDatabase() {
   }
 }
 
-initDatabase()
-  .then(() => {
-    console.log("Database initialization completed successfully");
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("Failed to initialize database:", error);
-    process.exit(1);
-  });
+module.exports = { initDatabase };

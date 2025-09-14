@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { testConnection } = require("./config/database");
+const { initDatabase } = require("./config/setup-db");
 
 // Load environment variables
 dotenv.config();
@@ -23,41 +24,54 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Test database connection
-testConnection();
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database
+    await initDatabase();
 
-// API routes
-app.use("/api/users", userRoutes);
-app.use("/api/stores", storeRoutes);
-app.use("/api/ratings", ratingRoutes);
-app.use("/api/owners", ownerRoutes);
-app.use("/api/admin", adminRoutes);
+    // Test database connection
+    testConnection();
 
-// Root route
-app.get("/", (req, res) => {
-  res.json({
-    message: "Rating App API",
-    version: "1.0.0",
-    endpoints: {
-      users: "/api/users",
-      stores: "/api/stores",
-      ratings: "/api/ratings",
-      owners: "/api/owners",
-      admin: "/api/admin",
-    },
-  });
-});
+    // API routes
+    app.use("/api/users", userRoutes);
+    app.use("/api/stores", storeRoutes);
+    app.use("/api/ratings", ratingRoutes);
+    app.use("/api/owners", ownerRoutes);
+    app.use("/api/admin", adminRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
-  });
-});
+    // Root route
+    app.get("/", (req, res) => {
+      res.json({
+        message: "Rating App API",
+        version: "1.0.0",
+        endpoints: {
+          users: "/api/users",
+          stores: "/api/stores",
+          ratings: "/api/ratings",
+          owners: "/api/owners",
+          admin: "/api/admin",
+        },
+      });
+    });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+    // Error handling middleware
+    app.use((err, req, res, next) => {
+      console.error(err.stack);
+      res.status(500).json({
+        message: "Internal Server Error",
+        error: process.env.NODE_ENV === "development" ? err.message : undefined,
+      });
+    });
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+startServer();
